@@ -37,9 +37,12 @@ class UserService {
 
     const findUser: User = await this.users.findUnique({ where: { id: userId } });
     if (!findUser) throw new HttpException(409, "You're not user");
-
-    const hashedPassword = await hash(userData.password, 10);
-    const updateUserData = await this.users.update({ where: { id: userId }, data: { ...userData, password: hashedPassword } });
+    
+    if (userData.passsword){
+     userData.password = await bcrypt.hash(userData.password, 10);
+    }
+   
+    const updateUserData = await this.users.update({ where: { id: userId }, data: { ...userData } });
     return updateUserData;
   }
 
